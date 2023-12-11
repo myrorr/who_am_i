@@ -16,8 +16,9 @@
         </div>
 
         <div class="absolute bottom-24 w-full flex justify-center items-center gap-4">
-            <span v-for="(slide, index) in getSlideCount" :key="index" 
-            :class="['cursor-pointer', 'w-5', 'h-5', 'rounded-full', 'shadow-md', index === currentSlide - 1 ? 'bg-purple-600' : 'bg-white']" @click="goToSlide(index)">
+            <span v-for="(slide, index) in getSlideCount" :key="index"
+                :class="['cursor-pointer', 'w-5', 'h-5', 'rounded-full', 'shadow-md', index === currentSlide - 1 ? 'bg-purple-600' : 'bg-white']"
+                @click="goToSlide(index)">
             </span>
         </div>
     </div>
@@ -32,8 +33,8 @@ import ColorThief from 'colorthief';
 
 const colorThief = new ColorThief();
 
-let imageColors : string[] = [];
-const currentSlide : Ref<number> = ref(1)
+let imageColors: string[] = [];
+const currentSlide: Ref<number> = ref(1)
 
 const getSlideCount: Ref<number> = ref(0)
 
@@ -53,13 +54,13 @@ const prevSlide = () => {
     currentSlide.value -= 1;
 }
 
-const goToSlide = (index : number) => {
+const goToSlide = (index: number) => {
     currentSlide.value = index + 1
 }
 
 
-const autoPlayEnabled : Ref<boolean> = ref(true);
-const timeoutDuration : Ref<number> = ref(5000);
+const autoPlayEnabled = ref(true);
+const timeoutDuration: Ref<number> = ref(5000);
 
 const autoPlay = () => {
     setInterval(() => {
@@ -67,25 +68,19 @@ const autoPlay = () => {
     }, timeoutDuration.value)
 }
 
-if(autoPlayEnabled.value) {
+if (autoPlayEnabled.value) {
     // autoPlay();
 }
 
 const getColorsOfImages = () => {
-    const images = document.querySelectorAll('.slide img');
-    images.forEach((image : HTMLImageElement) => {
-        if(image.complete) {
+    const images = document.querySelectorAll('.slide img') as NodeListOf<HTMLImageElement>;
+    images.forEach((image: HTMLImageElement) => {
+        if (image === null) return;
+        image.addEventListener('load', () => {
             const color = colorThief.getColor(image);
             const rgb = `radial-gradient(circle at center, rgb(${color[0]}, ${color[1]}, ${color[2]}), white)`;
             imageColors.push(rgb);
-        }
-        else{
-            image.addEventListener('load', () => {
-                const color = colorThief.getColor(image);
-                const rgb = `radial-gradient(circle at center, rgb(${color[0]}, ${color[1]}, ${color[2]}), white)`;
-                imageColors.push(rgb);
-            })
-        }
+        })
     })
 }
 

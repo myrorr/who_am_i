@@ -4,13 +4,13 @@
 
         <div class="p-0 px-16 h-full w-full absolute flex justify-center items-center">
             <div class="toggle-page flex flex-1">
-                <div class="cursor-pointer flex items-center justify-center rounded-full w-6 h-6 bg-purple-600 text-white">
-                    <font-awesome-icon @click.stop="prevSlide" icon="fa-solid fa-chevron-left" class="w-3 h-3" />
+                <div class="cursor-pointer flex items-center justify-center rounded-full w-6 h-6 bg-purple-600 text-white" @click.stop="prevSlide">
+                    <font-awesome-icon icon="fa-solid fa-chevron-left" class="w-3 h-3" />
                 </div>
             </div>
             <div class="toggle-page flex flex-1 justify-end">
-                <div class="cursor-pointer flex items-center justify-center rounded-full w-6 h-6 bg-purple-600 text-white">
-                    <font-awesome-icon @click.stop="nextSlide" icon="fa-solid fa-chevron-right" class="w-3 h-3" />
+                <div class="cursor-pointer flex items-center justify-center rounded-full w-6 h-6 bg-purple-600 text-white" @click.stop="nextSlide">
+                    <font-awesome-icon icon="fa-solid fa-chevron-right" class="w-3 h-3" />
                 </div>
             </div>
         </div>
@@ -73,20 +73,27 @@ if (autoPlayEnabled.value) {
 }
 
 const getColorsOfImages = () => {
-    const images = document.querySelectorAll('.slide img') as NodeListOf<HTMLImageElement>;
-    images.forEach((image: HTMLImageElement) => {
-        if (image === null) return;
-        image.addEventListener('load', () => {
-            const color = colorThief.getColor(image);
-            const rgb = `radial-gradient(circle at center, rgb(${color[0]}, ${color[1]}, ${color[2]}), white)`;
-            imageColors.push(rgb);
+    return new Promise((resolve) => {
+        const images = document.querySelectorAll('.slide img') as NodeListOf<HTMLImageElement>;
+        let loadedImages = 0;
+        images.forEach((image: HTMLImageElement) => {
+            if (image === null) return;
+            image.addEventListener('load', () => {
+                const color = colorThief.getColor(image);
+                const rgb = `radial-gradient(circle at center, rgb(${color[0]}, ${color[1]}, ${color[2]}), white)`;
+                imageColors.push(rgb);
+                loadedImages++;
+                if (loadedImages === images.length) {
+                    resolve(void 0);
+                }
+            })
         })
     })
 }
 
-onMounted(() => {
+onMounted(async () => {
+    await getColorsOfImages();
     getSlideCount.value = document.querySelectorAll('.slide').length
-    getColorsOfImages();
 })
 
 </script>

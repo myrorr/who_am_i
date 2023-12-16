@@ -70,4 +70,10 @@ npm run test:e2e -- --debug
 npm run lint
 ```
 
+### How to deploy to github pages
+
+1. Build using `npm run build`
+2. Run `git add dist` and `git commit -m <your_message>`
+3. Run `git subtree push --prefix dist origin gh-pages`
+
 
